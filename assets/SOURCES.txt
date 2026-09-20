@@ -22,3 +22,14 @@ https://commons.wikimedia.org/wiki/File:Raritan_Valley_Community_College_Tunnel_
 
 7. Custom-Control-Rooms.jpg — CC0 — CopyRyteDan / Wikimedia Commons
 https://commons.wikimedia.org/wiki/File:Custom-Control-Rooms.jpg
+
+ADDED / VARIED PUBLIC-DOMAIN OR CC0 PHOTO REFERENCES
+- Carousel at the Carolina Beach Boardwalk Amusement Park (Wikimedia Commons, CC0)
+  https://commons.wikimedia.org/wiki/File:Carousel_at_the_Carolina_Beach_Boardwalk_Amusement_Park.jpg
+- Ferris Wheel at Night (Wikimedia Commons, CC0)
+  https://commons.wikimedia.org/wiki/File:Ferris_Wheel_at_Night.jpg
+- Amusement park roller coaster at beach at Wildwood New Jersey (Wikimedia Commons, CC0)
+  https://commons.wikimedia.org/wiki/File:Amusement_park_roller_coaster_at_beach_at_Wildwood_New_Jersey.jpg
+
+RUNTIME FALLBACKS
+Remote archival-photo references now use scene-matched local degraded stills when a remote image cannot load. They no longer all fall back to the case water-bottle image.
