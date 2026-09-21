@@ -41,3 +41,24 @@ body.finale-site{background:#d8d3c5;color:#222;font-family:Georgia,'SimSun',seri
 @media(max-width:760px){.park-home-cols,.lab-columns,.svc-columns,.maint-columns,.lab-shop-front{grid-template-columns:1fr}.ticket-stub{display:block}.guest-row>span{float:none;display:block}.query-form input{min-width:0;width:100%}.query-form button{margin:7px 0 0}.format-hint{float:none;display:block}.svc-login-window{margin:25px auto}.compare-top img{width:900px}.archive-seal{float:none;display:inline-block;margin-bottom:8px}}
 
 @media(max-width:760px){.park-table,.lab-order,.thread-list,.svc-grid,.maint-table,.archive-index{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.park-table td,.park-table th,.svc-grid td,.svc-grid th,.maint-table td,.maint-table th,.archive-index td,.archive-index th{min-width:92px}.forum-bar{line-height:2.1}.maint-nav{line-height:2.2}.svc-toolbar{line-height:2.2}}
+
+/* v1.4 archive-photo consistency */
+.contact img,.park-photo-frame img,.news-photo img,.maint-photo img{image-rendering:auto}
+.contact img{filter:saturate(.88) contrast(1.03);background:#171616}
+.map-stage img,.compare-stage img{background:#ece7d3;box-shadow:0 1px 5px rgba(0,0,0,.22)}
+.archive-help{line-height:1.75}
+
+/* government project information refinements */
+.gov-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #c7d1d8;background:#f5f8fa;margin:18px 0 12px}.gov-summary-grid div{padding:12px 14px;border-right:1px solid #d6dfe4}.gov-summary-grid div:last-child{border-right:0}.gov-summary-grid span{display:block;color:#6d7a82;font-size:12px;margin-bottom:5px}.gov-summary-grid strong{font-size:14px;color:#223640;font-weight:600}.gov-notice{border-left:4px solid #b3232d;background:#faf6f2;padding:11px 14px;margin:12px 0 20px;font-size:14px;line-height:1.7}.gov-info-table{width:100%;border-collapse:collapse;margin:18px 0 22px;font-size:14px}.gov-info-table th,.gov-info-table td{border:1px solid #d8dfe3;padding:10px 12px;vertical-align:top}.gov-info-table th{width:115px;background:#f0f4f6;color:#425762;text-align:left;font-weight:600}.gov-info-table td{background:#fff;line-height:1.75}@media(max-width:680px){.gov-summary-grid{grid-template-columns:1fr 1fr}.gov-summary-grid div:nth-child(2){border-right:0}.gov-summary-grid div{border-bottom:1px solid #d6dfe4}.gov-info-table th{width:86px}}
+
+/* v1.5 world-photo and archive-comparison polish */
+.park-more{margin:14px 0 4px}.park-more a{font-weight:bold;color:#004a96}
+.archive-check{margin-top:22px;border:1px solid #8d8674;background:#eee8d4;padding:16px 18px}
+.archive-check h2{margin-top:0}.archive-check form{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+.archive-check label{display:grid;gap:5px;font-size:14px}.archive-check select{padding:8px;border:1px solid #756f60;background:#fffef6;font-family:'SimSun',serif}
+.archive-check button{padding:8px 14px;background:#6f6857;color:#fff;border:1px solid #4f4a3e;cursor:pointer}.archive-unlock{margin-top:14px}
+@media(max-width:760px){.archive-check form{grid-template-columns:1fr}.archive-check button{width:100%}}
+
+/* v1.6 final investigation polish */
+.map-markable{position:relative;cursor:crosshair;user-select:none}.map-marker{position:absolute;width:28px;height:28px;border:2px solid #8b2e24;border-radius:50%;transform:translate(-50%,-50%);z-index:5;box-shadow:0 0 0 2px rgba(244,239,217,.72);pointer-events:none}.map-marker::before,.map-marker::after{content:'';position:absolute;background:#8b2e24;left:50%;top:50%;transform:translate(-50%,-50%)}.map-marker::before{width:38px;height:1px}.map-marker::after{width:1px;height:38px}.map-mark-help{padding:10px 12px;background:#e2dbc2;border:1px dashed #8a816c;margin:12px 0;font-size:14px}.archive-check form{grid-template-columns:minmax(160px,.65fr) minmax(280px,1.6fr) auto}.archive-freeanswer{width:100%;padding:8px 10px;border:1px solid #756f60;background:#fffef6;font-family:'SimSun',serif}.mark-readout{padding:8px 10px;border:1px solid #918875;background:#f8f3df;min-height:42px;align-self:end}.faq-row{border-bottom:1px dotted #625a70;padding:9px 0}.faq-row b{color:#eadba9}.faq-row p{margin:5px 0 8px}.svc-note-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.svc-note-grid>div{border:1px inset #c9c9c9;background:#f5f5eb;padding:8px;font-size:13px}.park-more a{margin-right:12px}
+@media(max-width:760px){.archive-check form{grid-template-columns:1fr}.svc-note-grid{grid-template-columns:1fr}.map-marker{width:24px;height:24px}}

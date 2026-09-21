@@ -1,40 +1,18 @@
-External photographic references used at runtime (all public domain / CC0):
+《春灯闭园以后》运行素材说明
 
-1. Baishamen Park ferris wheel — CC0 — Anna Frodesiak / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:Baishamen_Park_-_amusement_park_-_ferris_wheel_-_01.jpg
+本发行版本所有运行时图片均已本地化，不依赖外部图床或第三方网络资源。
+本轮关键剧情照片（灯灯熊、C2通道、魔镜宫夜景、冲印样片、遗物等）使用 OpenAI 图像生成工具制作后再进行裁切、低端数码相机/冲印扫描质感统一处理；均为虚构场景，不对应现实案件、现实人物或现实游乐园。
+唐屿信件为本地排版生成的虚构扫描件，使用系统字体渲染，不包含外部分发字体文件。
+人物头像、工程图和其余文字扫描件均随包本地提供。
 
-2. Pripyat AmusementPark — released into the public domain by author — Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:Pripyat_AmusementPark.jpg
-
-3. CostumeMascot1.jpg — CC0 — University of Houston / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:CostumeMascot1.jpg
-
-4. CarouselBuildingGlenEcho.JPG — public domain — Edward T. Ordman / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:CarouselBuildingGlenEcho.JPG
-
-5. Trinityloopoverview.jpg — CC0 — Clump / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:Trinityloopoverview.jpg
-
-The photographs are used as visual stand-ins for fictional locations/archives. Names, dates and story events in the game are fictional and do not describe the real photographed locations or people.
-
-6. Raritan Valley Community College Tunnel to planetarium — CC0 — Tomwsulcer / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:Raritan_Valley_Community_College_Tunnel_to_planetarium.jpg
-
-7. Custom-Control-Rooms.jpg — CC0 — CopyRyteDan / Wikimedia Commons
-https://commons.wikimedia.org/wiki/File:Custom-Control-Rooms.jpg
-
-ADDED / VARIED PUBLIC-DOMAIN OR CC0 PHOTO REFERENCES
-- Carousel at the Carolina Beach Boardwalk Amusement Park (Wikimedia Commons, CC0)
-  https://commons.wikimedia.org/wiki/File:Carousel_at_the_Carolina_Beach_Boardwalk_Amusement_Park.jpg
-- Ferris Wheel at Night (Wikimedia Commons, CC0)
-  https://commons.wikimedia.org/wiki/File:Ferris_Wheel_at_Night.jpg
-- Amusement park roller coaster at beach at Wildwood New Jersey (Wikimedia Commons, CC0)
-  https://commons.wikimedia.org/wiki/File:Amusement_park_roller_coaster_at_beach_at_Wildwood_New_Jersey.jpg
-
-RUNTIME FALLBACKS
-Remote archival-photo references now use scene-matched local degraded stills when a remote image cannot load. They no longer all fall back to the case water-bottle image.
+作品故事、人物、地点与机构均为虚构。
 
 
-VNEXT NOTE
-- Runtime pages continue to reference the listed Commons photographs, with scene-matched local fallback stills for offline failure.
-- Technical plan images map_1999/map_2003/map_2006 are fictional in-game documents generated for this work and do not depict a real site.
+2026-09 visual expansion
+- assets/img/story_photos/park_ticket.jpg
+- assets/img/story_photos/park_bumper_prize.jpg
+- assets/img/story_photos/park_visitor_center.jpg
+- assets/img/story_photos/park_service_gate.jpg
+- assets/img/story_photos/park_kiddie.jpg
+- assets/img/story_photos/park_night_unique.jpg
+These are fictional in-project generated photographs created specifically for the Spring Lamp amusement park setting, then downsampled and JPEG-aged for the 2006 archive look. No external copyrighted source image is embedded in these files.

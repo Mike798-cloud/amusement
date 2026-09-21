@@ -10,10 +10,35 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.viewer.open').forEach(v=>v.classList.remove('open'));});
 
   const mapButtons=document.querySelectorAll('[data-map]');
-  if(mapButtons.length){const target=document.querySelector('#map-image');mapButtons.forEach(b=>b.addEventListener('click',()=>{mapButtons.forEach(x=>x.classList.remove('active'));b.classList.add('active');if(target){target.src=b.dataset.map;target.alt=b.textContent+'平面图';}const note=document.querySelector('#map-note');if(note)note.textContent=b.dataset.note||'';}));}
-  const cr=document.querySelector('#compare-range'), ct=document.querySelector('#compare-top');if(cr&&ct){const stage=ct.parentElement, img=ct.querySelector('img');const sync=()=>{ct.style.width=cr.value+'%';if(stage&&img)img.style.width=stage.clientWidth+'px';};cr.addEventListener('input',sync);addEventListener('resize',sync);sync();}
+  const mapSeen=new Set();
+  let currentMapYear='1999', mapMark=null, compareUsed=false;
+  if(mapButtons.length){const target=document.querySelector('#map-image');const marker=document.querySelector('.map-marker');const stage=document.querySelector('[data-map-mark]');const readout=document.querySelector('.mark-readout');const active=[...mapButtons].find(b=>b.classList.contains('active'));if(active?.dataset.year){mapSeen.add(active.dataset.year);currentMapYear=active.dataset.year;}const redraw=()=>{if(!marker)return;if(mapMark&&currentMapYear==='2003'){marker.hidden=false;marker.style.left=mapMark.x+'%';marker.style.top=mapMark.y+'%';}else marker.hidden=true;};mapButtons.forEach(b=>b.addEventListener('click',()=>{mapButtons.forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.year){mapSeen.add(b.dataset.year);currentMapYear=b.dataset.year;}if(target){target.src=b.dataset.map;target.alt=b.textContent+'平面图';}const note=document.querySelector('#map-note');if(note)note.textContent=b.dataset.note||'';redraw();}));if(stage){stage.addEventListener('click',e=>{if(e.target.closest('button'))return;if(currentMapYear!=='2003'){if(readout)readout.textContent='圈选只记录在2003竣工图上；请切到2003图后再点。';return;}const r=stage.getBoundingClientRect();const x=((e.clientX-r.left)/r.width)*100,y=((e.clientY-r.top)/r.height)*100;mapMark={x:+x.toFixed(2),y:+y.toFixed(2)};const form=document.querySelector('form[data-map-check]');if(form){form.elements.markx.value=mapMark.x;form.elements.marky.value=mapMark.y;}if(readout)readout.textContent='已圈选2003竣工图上的一个位置；可再次点击修改。';redraw();});}}
+  const cr=document.querySelector('#compare-range'), ct=document.querySelector('#compare-top');if(cr&&ct){const stage=ct.parentElement, img=ct.querySelector('img');const sync=()=>{ct.style.width=cr.value+'%';if(stage&&img)img.style.width=stage.clientWidth+'px';};cr.addEventListener('input',()=>{compareUsed=true;sync();});addEventListener('resize',sync);sync();}
 
   document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.filter;document.querySelectorAll('[data-record]').forEach(r=>{r.style.display=(f==='all'||r.dataset.record===f)?'table-row':'none';});}));
+
+  const mapCheck=document.querySelector('form[data-map-check]');
+  if(mapCheck){
+    const unlock=document.querySelector('#archive-unlock'), msg=mapCheck.querySelector('.form-msg');
+    const show=()=>{if(unlock)unlock.hidden=false;};
+    if(localStorage.getItem('chundeng-map-ok')==='1')show();
+    mapCheck.addEventListener('submit',e=>{
+      e.preventDefault();
+      const x=parseFloat(mapCheck.elements.markx?.value||''), y=parseFloat(mapCheck.elements.marky?.value||''), raw=(mapCheck.elements.difference?.value||'').trim();
+      const compact=raw.replace(/[，,、。；;\s]/g,'');
+      if(msg){msg.className='form-msg';msg.textContent='';}
+      if(mapSeen.size<3){if(msg){msg.textContent='三期图还没有看全。请把1999、2003、2006至少各打开一次。';msg.classList.add('error');}return;}
+      if(!compareUsed){if(msg){msg.textContent='请先拖动一次叠图，把2003与2006在同一位置对齐比较。';msg.classList.add('error');}return;}
+      if(!Number.isFinite(x)||!Number.isFinite(y)||!raw){if(msg){msg.textContent='还缺圈选位置或文字说明。';msg.classList.add('error');}return;}
+      const rightSpot=x>=41.5&&x<=55.5&&y>=27.5&&y<=45.5;
+      const hasAccess=/(检修口|检修门|检查口|检修洞|检修开口)/.test(compact);
+      const hasWall=/(短墙|局部墙|墙体|隔墙|墙线)/.test(compact);
+      if(rightSpot&&hasAccess&&hasWall){
+        localStorage.setItem('chundeng-map-ok','1');show();
+        if(msg){msg.textContent='复核登记完成。项目调阅记录已开放。';msg.classList.add('ok');}
+      }else if(msg){msg.textContent='复核没有通过。请回到同一轴网位置，再比较2003与2006的墙线、开口和闭合关系。';msg.classList.add('error');}
+    });
+  }
 
   const norm=s=>(s||'').trim().toUpperCase();
   document.querySelectorAll('form[data-puzzle]').forEach(form=>form.addEventListener('submit',e=>{
