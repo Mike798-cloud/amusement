@@ -33,3 +33,8 @@ ADDED / VARIED PUBLIC-DOMAIN OR CC0 PHOTO REFERENCES
 
 RUNTIME FALLBACKS
 Remote archival-photo references now use scene-matched local degraded stills when a remote image cannot load. They no longer all fall back to the case water-bottle image.
+
+
+VNEXT NOTE
+- Runtime pages continue to reference the listed Commons photographs, with scene-matched local fallback stills for offline failure.
+- Technical plan images map_1999/map_2003/map_2006 are fictional in-game documents generated for this work and do not depict a real site.
