@@ -80,6 +80,7 @@
     COOKIE_KEY:'_chundeng_support_flag',
     AUTO_SEEN_KEY:'_chundeng_support_auto_seen',
     qrCode:'https://mike798-cloud.github.io/songtao-grainstation/paycode.png',
+    qrCodeFallback:'https://raw.githubusercontent.com/Mike798-cloud/songtao-grainstation/main/paycode.png',
     _getCookie(name){
       try{const key=name+'=';for(const part of document.cookie.split(';')){const value=part.trim();if(value.indexOf(key)===0)return value.slice(key.length);}}catch(e){}
       return '';
@@ -128,7 +129,7 @@
               <p>自愿支持，不影响完整游玩，也不会解锁额外内容。</p>
             </header>
             <div class="chundeng-paywall-body">
-              <figure class="chundeng-paywall-qr"><img src="${this.qrCode}" alt="1元支持收款码"><figcaption>扫码支持 1 元</figcaption></figure>
+              <figure class="chundeng-paywall-qr"><img src="${this.qrCode}" alt="1元支持收款码"><figcaption>扫码支持 1 元</figcaption><p class="chundeng-paywall-qrerror" hidden>收款码暂时没加载出来。<a href="${this.qrCode}" target="_blank" rel="noopener">单独打开收款码</a></p></figure>
               <div class="chundeng-paywall-copy">
                 <p>你好，我是 abc。谢谢你愿意把这些旧新闻、冲印照片、论坛回复和工单一页页翻到这里。</p>
                 <p>做这部作品的时候，我花了不少时间在那些看起来没什么用的东西上：退票单、失物记录、维修编号，还有很多当年根本没人当回事的小事。它们不一定都是线索，但少了这些，春灯就不像真的存在过。</p>
@@ -143,6 +144,7 @@
           </div>
         </section>`;
         document.body.appendChild(overlay);
+        const qr=overlay.querySelector('.chundeng-paywall-qr img');if(qr){qr.dataset.fallback='0';qr.addEventListener('error',()=>{if(qr.dataset.fallback==='0'){qr.dataset.fallback='1';qr.src=this.qrCodeFallback;return;}qr.hidden=true;const msg=overlay.querySelector('.chundeng-paywall-qrerror');if(msg){const a=msg.querySelector('a');if(a)a.href=this.qrCodeFallback;msg.hidden=false;}});}
         overlay.querySelector('.chundeng-paywall-close').addEventListener('click',()=>this.hide());
         overlay.querySelector('.chundeng-paywall-later').addEventListener('click',()=>this.hide());
         overlay.querySelector('.chundeng-paywall-done').addEventListener('click',()=>{this.markPaid();this.hide();this.toast('收到啦，谢谢你。后面照常往下查就好。');});
