@@ -70,4 +70,100 @@
       localStorage.setItem(auth.archive,'1');if(box){box.hidden=false;box.innerHTML='<b>检索结果 1 条</b><br>CH-03-441-C　春灯游乐园C区排水与后场检修改造　2003　长期保存<br><a href="../archive/records.html">打开工程目录</a>　·　<a href="../archive/maps.html">图纸阅览</a>'; }ok('检索完成。');return;
     }
   }));
+
+
+  /* voluntary 1 yuan support layer, adapted from the current Xu Yuan flow.
+     It is completely separate from game state and never gates content. */
+  const ChundengSupport={
+    STORAGE_KEY:'_chundeng_support',
+    SESSION_KEY:'_chundeng_support_session',
+    COOKIE_KEY:'_chundeng_support_flag',
+    AUTO_SEEN_KEY:'_chundeng_support_auto_seen',
+    qrCode:'https://mike798-cloud.github.io/songtao-grainstation/paycode.png',
+    _getCookie(name){
+      try{const key=name+'=';for(const part of document.cookie.split(';')){const value=part.trim();if(value.indexOf(key)===0)return value.slice(key.length);}}catch(e){}
+      return '';
+    },
+    _setCookie(name,value,days){
+      try{const d=new Date();d.setTime(d.getTime()+days*86400000);document.cookie=name+'='+value+';expires='+d.toUTCString()+';path=/;SameSite=Lax';}catch(e){}
+    },
+    hasPaid(){
+      try{return !!(localStorage.getItem(this.STORAGE_KEY)||sessionStorage.getItem(this.SESSION_KEY)||this._getCookie(this.COOKIE_KEY));}
+      catch(e){return !!this._getCookie(this.COOKIE_KEY);}
+    },
+    hasAutoSeen(){try{return localStorage.getItem(this.AUTO_SEEN_KEY)==='1';}catch(e){return false;}},
+    markAutoSeen(){try{localStorage.setItem(this.AUTO_SEEN_KEY,'1');}catch(e){}},
+    markPaid(){
+      const raw=Date.now()+'_'+Math.random().toString(36).slice(2,10)+'_chundeng';
+      let token=raw;try{token=btoa(unescape(encodeURIComponent(raw)));}catch(e){}
+      try{localStorage.setItem(this.STORAGE_KEY,token);sessionStorage.setItem(this.SESSION_KEY,token);}catch(e){}
+      this._setCookie(this.COOKIE_KEY,token,365);
+      document.body.classList.add('support-complete');
+    },
+    shouldShowChip(){
+      const p=location.pathname.replace(/\\/g,'/');
+      return /\/(lab|forum|service|maintenance|archive|demolition)\//.test(p) && !document.body.classList.contains('thanks-site');
+    },
+    ensureButton(){
+      if(!this.shouldShowChip()||document.getElementById('chundengSupportButton'))return;
+      const btn=document.createElement('button');btn.type='button';btn.id='chundengSupportButton';btn.className='chundeng-support-chip';btn.setAttribute('aria-label','支持作者 1元');
+      btn.innerHTML='<span>￥</span><b>支持作者</b>';
+      btn.addEventListener('click',()=>this.show({manual:true}));document.body.appendChild(btn);
+      if(this.hasPaid())document.body.classList.add('support-complete');
+    },
+    show(options={}){
+      if(this.hasPaid()){
+        if(options.manual)this.toast('已经收到你的支持了，谢谢你。后面的调查照常看就好。');
+        return;
+      }
+      let overlay=document.getElementById('chundengSupportOverlay');
+      if(!overlay){
+        overlay=document.createElement('div');overlay.className='chundeng-paywall-overlay';overlay.id='chundengSupportOverlay';
+        overlay.innerHTML=`<section class="chundeng-paywall-card" role="dialog" aria-modal="true" aria-labelledby="chundengPayTitle">
+          <button type="button" class="chundeng-paywall-close" aria-label="关闭">×</button>
+          <div class="chundeng-paywall-inner">
+            <header class="chundeng-paywall-head">
+              <div class="chundeng-paywall-eyebrow">abc studio / voluntary support</div>
+              <h2 id="chundengPayTitle">如果你愿意，支持《春灯闭园以后》1元</h2>
+              <p>自愿支持，不影响完整游玩，也不会解锁额外内容。</p>
+            </header>
+            <div class="chundeng-paywall-body">
+              <figure class="chundeng-paywall-qr"><img src="${this.qrCode}" alt="1元支持收款码"><figcaption>扫码支持 1 元</figcaption></figure>
+              <div class="chundeng-paywall-copy">
+                <p>你好，我是 abc。谢谢你愿意把这些旧新闻、冲印照片、论坛回复和工单一页页翻到这里。</p>
+                <p>做这部作品的时候，我花了不少时间在那些看起来没什么用的东西上：退票单、失物记录、维修编号，还有很多当年根本没人当回事的小事。它们不一定都是线索，但少了这些，春灯就不像真的存在过。</p>
+                <p>如果你觉得这趟调查值得，愿意留下一块钱，我会很开心；不方便也完全没关系，关掉这里继续往后查，后面的内容一页都不会少。</p>
+                <p class="chundeng-paywall-line">这一块钱当然改不了二十年前的结果。对我来说，它只是说明真的有人把这些旧东西认真翻了下去。</p>
+              </div>
+            </div>
+            <footer class="chundeng-paywall-foot">
+              <button type="button" class="chundeng-paywall-done">我支持了一下</button>
+              <button type="button" class="chundeng-paywall-later">继续调查</button>
+            </footer>
+          </div>
+        </section>`;
+        document.body.appendChild(overlay);
+        overlay.querySelector('.chundeng-paywall-close').addEventListener('click',()=>this.hide());
+        overlay.querySelector('.chundeng-paywall-later').addEventListener('click',()=>this.hide());
+        overlay.querySelector('.chundeng-paywall-done').addEventListener('click',()=>{this.markPaid();this.hide();this.toast('收到啦，谢谢你。后面照常往下查就好。');});
+        overlay.addEventListener('click',event=>{if(event.target===overlay)this.hide();});
+      }
+      overlay.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('is-open')));
+      overlay.querySelector('.chundeng-paywall-close')?.focus({preventScroll:true});
+    },
+    hide(){const overlay=document.getElementById('chundengSupportOverlay');if(!overlay)return;overlay.classList.remove('is-open');setTimeout(()=>{overlay.hidden=true;},360);},
+    toast(text){const old=document.querySelector('.chundeng-support-toast');if(old)old.remove();const el=document.createElement('div');el.className='chundeng-support-toast';el.textContent=text;document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350);},3200);},
+    init(){
+      this.ensureButton();
+      if(this.hasPaid()||this.hasAutoSeen())return;
+      if(document.body.classList.contains('support-trigger')){
+        const fire=()=>{if(this.hasPaid()||this.hasAutoSeen())return;if(document.hidden){const onVisible=()=>{if(document.hidden)return;document.removeEventListener('visibilitychange',onVisible);fire();};document.addEventListener('visibilitychange',onVisible);return;}this.markAutoSeen();this.show({auto:true});};
+        setTimeout(fire,4800);
+      }
+    }
+  };
+  window.ChundengSupport=ChundengSupport;
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')ChundengSupport.hide();});
+  ChundengSupport.init();
+
 })();
