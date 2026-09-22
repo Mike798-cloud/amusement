@@ -80,6 +80,57 @@
     });
   }
 
+
+  const labLedger=document.querySelector('[data-lab-ledger]');
+  if(labLedger){
+    const msg=document.querySelector('.lab-ledger-msg');
+    const tell=(text,good=false)=>{if(!msg)return;msg.className='form-msg lab-ledger-msg '+(good?'ok':'error');msg.textContent=text;};
+    labLedger.querySelectorAll('[data-batch]').forEach(btn=>btn.addEventListener('click',()=>{
+      const batch=btn.dataset.batch;
+      if(batch==='SG-060819-087'){
+        localStorage.setItem(auth.lab,'1');tell('登记一致：该批次仍保留8张公开低清样片。正在打开……',true);
+        setTimeout(()=>location.href=btn.dataset.batchSuccess||'20060819.html',220);return;
+      }
+      const notes={
+        'SG-060812-041':'这批登记还在，但网上样片已经清理。',
+        'SG-060817-033':'私人顾客批次不开放网上样片。',
+        'SG-060818-054':'团体批次已经下线，没有保留公开样片。',
+        'SG-060820-012':'这是员工相机送印，登记为店内取件，没有公开样片。'
+      };
+      tell(notes[batch]||'该批次没有可公开查看的样片。回到春灯相册核对来源和日期。');
+    }));
+  }
+
+  const archiveCatalog=document.querySelector('form[data-archive-catalog]');
+  if(archiveCatalog){
+    const y=archiveCatalog.elements.year,serial=archiveCatalog.elements.serial,part=archiveCatalog.elements.part;
+    const msg=archiveCatalog.querySelector('.form-msg'),box=archiveCatalog.querySelector('.archive-results');
+    const preview={y:archiveCatalog.querySelector('[data-archive-year]'),s:archiveCatalog.querySelector('[data-archive-serial]'),p:archiveCatalog.querySelector('[data-archive-part]')};
+    const sync=()=>{if(preview.y)preview.y.textContent=y.value||'YY';if(preview.s)preview.s.textContent=serial.value||'###';if(preview.p)preview.p.textContent=part.value||'X';};
+    [y,serial,part].forEach(el=>el&&el.addEventListener('change',sync));sync();
+    archiveCatalog.addEventListener('submit',e=>{
+      e.preventDefault();if(msg){msg.className='form-msg';msg.textContent='';}if(box){box.hidden=true;box.innerHTML='';}
+      if(!y.value||!serial.value||!part.value){if(msg){msg.textContent='索引还没放完整。工程附件背面抄了三段，用那三段分别对应年度、流水和分册。';msg.classList.add('error');}return;}
+      const code=`CH-${y.value}-${serial.value}-${part.value}`;
+      const known={
+        'CH-04-188-B':['沿河路雨污分流一期竣工资料','2004'],
+        'CH-05-032-D':['城南市场消防改造','2005'],
+        'CH-06-118-F':['春灯游乐园消防备案总图','2006'],
+        'CH-06-224-A':['北门公交首末站扩建','2006']
+      };
+      if(code==='CH-03-441-C'){
+        localStorage.setItem(auth.archive,'1');
+        if(box){box.hidden=false;box.innerHTML='<b>检索结果 1 条</b><br>CH-03-441-C　春灯游乐园C区排水与后场检修改造　2003　长期保存<br><a href="../archive/records.html">打开工程目录</a>　·　<a href="../archive/maps.html">图纸阅览</a>'; }
+        if(msg){msg.textContent='索引对应。该卷包含2003年C区改造竣工资料。';msg.classList.add('ok');}return;
+      }
+      if(known[code]){
+        if(box){box.hidden=false;box.innerHTML=`<b>检索结果 1 条</b><br>${code}　${known[code][0]}　${known[code][1]}　可阅`;}
+        if(msg){msg.textContent='有这卷，但不是工程组纸质附件背面那组三段索引。';msg.classList.add('error');}return;
+      }
+      if(msg){msg.textContent='没有找到这个组合。别从“最近数字化”里猜号码；回看工程组维修页纸质附件背面的手写索引。';msg.classList.add('error');}
+    });
+  }
+
   const norm=s=>(s||'').trim().toUpperCase();
   const normCode=s=>norm(s).replace(/[‐‑‒–—－﹣]/g,'-').replace(/\s+/g,'');
   document.querySelectorAll('form[data-puzzle]').forEach(form=>{
@@ -88,29 +139,12 @@
       e.preventDefault();const kind=form.dataset.puzzle,msg=form.querySelector('.form-msg');if(msg){msg.className='form-msg';msg.textContent='';}
       const bad=t=>{attempts+=1;if(msg){msg.textContent=t;msg.classList.add('error');}};
       const ok=t=>{if(msg){msg.textContent=t;msg.classList.add('ok');}};
-      if(kind==='lab'){
-        const code=normCode(form.elements.code?.value);
-        if(!/^SG-\d{6}-\d{3}$/.test(code))return bad('批次号应为 SG-日期6位-流水3位。完整号码就在春灯相册的“冲印批次”表里。');
-        if(code!=='SG-060819-087')return bad(attempts>=1?'这个批次没有公开样片。若在追查8月19日，回看春灯相册里标着“8月19日夜场前后”的那一行。':'没有找到可公开查看的样片。请核对批次号。');
-        localStorage.setItem(auth.lab,'1');ok('已找到公开活动批次，正在打开样片……');setTimeout(()=>location.href=form.dataset.success,250);return;
-      }
       if(kind==='service'){
         const user=normCode(form.elements.user?.value), pass=(form.elements.pass?.value||'').replace(/\s+/g,'');
         if(!/^[A-Z]{2}\d{3}$/.test(user))return bad('用户名是2位岗位代码加3位工号。旧论坛帖子里有一处直接写出了员工签名和编号。');
         if(!/^\d{6}$/.test(pass))return bad('口令是6位数字。登录页写的是“首次口令为入职年月”，不是生日。');
         if(user!=='KF017'||pass!=='200407')return bad(attempts>=1?'账号或口令仍不匹配。论坛“旧事旧人”里相邻两层分别给了陆婕的入职月份和 KF 编号，把两条信息合起来。':'用户名或口令错误。归档镜像不会锁定账号。');
         localStorage.setItem(auth.service,'1');ok('验证通过，正在进入只读系统……');setTimeout(()=>location.href=form.dataset.success,250);return;
-      }
-      if(kind==='maintenance'){
-        const w=normCode(form.elements.workorder?.value),box=form.querySelector('.terminal-result');
-        if(!/^WX-\d{6}$/.test(w))return bad('维修单编号应为 WX-######。先从游客服务系统点开与“魔镜宫后场侧门”有关的工程转办，再带完整编号来查。');
-        if(box){box.hidden=false;if(w==='WX-060724'){box.innerHTML='MATCH: C-MIRROR / REPAIR / 060724<br><a href="../maintenance/repairs.html">OPEN RECORD</a>';ok('1 match.');}else if(['WX-060721','WX-060818','WX-060814'].includes(w)){const map={'WX-060721':'A-RIDE / utility','WX-060818':'A-RIDE / train','WX-060814':'D-WATER + C-MIRROR cross-ref'};box.textContent='MATCH: '+map[w];ok('1 match.');}else{box.textContent='NO MATCH IN RECOVERED INDEX';bad(attempts>=1?'恢复索引里没有这张单。当前调查需要的是游客服务系统里“魔镜宫后场侧门”的那张 WX 转办。':'未在恢复索引中找到该编号。');}}return;
-      }
-      if(kind==='archive'){
-        const a=normCode(form.elements.archive?.value),box=form.querySelector('.archive-results');
-        if(!/^CH-\d{2}-\d{3}-[A-Z]$/.test(a))return bad('完整档号格式是 CH-YY-###-X。工程组附件只抄了中间那串索引，需要按这里的格式补全。');
-        if(a!=='CH-03-441-C')return bad(attempts>=1?'这个档号不是当前工程卷。回看工程组 C-MIRROR / REPAIR 页纸质附件背面的手写索引。':'检索到的公开卷宗与当前条件不匹配，或该档号不存在。');
-        localStorage.setItem(auth.archive,'1');if(box){box.hidden=false;box.innerHTML='<b>检索结果 1 条</b><br>CH-03-441-C　春灯游乐园C区排水与后场检修改造　2003　长期保存<br><a href="../archive/records.html">打开工程目录</a>　·　<a href="../archive/maps.html">图纸阅览</a>'; }ok('检索完成。');return;
       }
     });
   });

@@ -210,3 +210,39 @@ button[data-photo]{display:block;width:100%;border:0;padding:0;background:transp
   .archive-site .viewer{overflow:auto;align-items:flex-start;justify-content:flex-start;padding:14px}
   .archive-site .viewer img{max-width:none;max-height:none;width:1100px;margin:45px auto 20px}
 }
+
+/* v2.3 interaction-variety pass — only the staff login remains a typed progression puzzle */
+.lab-batch-ledger{margin:20px 0;border:1px solid #70667b;background:#17141f;font:13px 'Courier New','Microsoft YaHei',monospace}
+.lab-ledger-head,.lab-batch-ledger>button{display:grid;grid-template-columns:1.3fr .65fr 1fr .75fr;gap:8px;align-items:center;width:100%;padding:9px 11px;border:0;border-bottom:1px solid #4d4556;text-align:left}
+.lab-ledger-head{background:#2b2634;color:#cbbf9c;font-weight:bold}
+.lab-batch-ledger>button{background:#1d1925;color:#e7ded0;cursor:pointer;font:inherit}
+.lab-batch-ledger>button:hover,.lab-batch-ledger>button:focus-visible{background:#342b3d;color:#fff0bd}
+.lab-batch-ledger>button:focus-visible{outline:2px solid #d5b96f;outline-offset:-3px}
+.lab-batch-ledger>button span:last-child{color:#bdb0c4}
+.lab-ledger-msg{min-height:1.7em}
+
+.maint-folder-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.maint-folder-grid a{display:block;min-height:70px;padding:10px 12px;border:1px solid #8d948e;background:#d9ddd8;color:#27342d;text-decoration:none;box-shadow:inset 1px 1px 0 #f7f8f6}
+.maint-folder-grid a:hover,.maint-folder-grid a:focus-visible{background:#c6cec7;outline:2px solid #6b785f;outline-offset:1px}
+.maint-folder-grid b,.maint-folder-grid span{display:block}.maint-folder-grid b{font:700 14px 'Courier New',monospace}.maint-folder-grid span{margin-top:7px;color:#56615b;font:12px/1.5 'Microsoft YaHei',sans-serif}
+
+.archive-catalog-fields{display:grid;grid-template-columns:minmax(90px,1fr) 18px minmax(110px,1.2fr) 18px minmax(90px,1fr) auto;gap:7px;align-items:end}
+.archive-catalog-fields label{display:grid;gap:5px;font-size:13px}.archive-catalog-fields select{width:100%;padding:7px 9px;border:1px solid #756f60;background:#fffef6;color:#282620;font:14px 'Courier New',monospace}
+.archive-dash{padding-bottom:9px;text-align:center;font:bold 18px 'Courier New',monospace;color:#655e50}
+.archive-code-preview{margin-top:12px;padding:8px 10px;border:1px inset #d8d1bd;background:#e0dac6;color:#504a3f;font:700 15px 'Courier New',monospace;letter-spacing:.4px}
+.archive-code-preview span{color:#7d342b}
+
+.service-site .emergency-note{margin:16px 0;background:#e7e2d2;color:#2c2c27;box-shadow:inset 0 0 22px rgba(75,62,42,.12);font-family:'SimSun',serif;transform:rotate(-.15deg)}
+.service-site .emergency-note p{margin:8px 0 0;line-height:1.9}
+.radio-sequence{display:grid;grid-template-columns:repeat(4,1fr);margin:18px 0;border:1px solid #737a74;background:#e5e7e1;color:#313a34}
+.radio-sequence span{padding:9px 10px;border-right:1px solid #a5aaa5;font:12px/1.55 'Courier New','Microsoft YaHei',monospace}
+.radio-sequence span:last-child{border-right:0}
+
+@media(max-width:760px){
+  .lab-ledger-head{display:none}.lab-batch-ledger>button{grid-template-columns:1fr 1fr}.lab-batch-ledger>button span:nth-child(2),.lab-batch-ledger>button span:nth-child(4){text-align:right}
+  .maint-folder-grid{grid-template-columns:1fr}
+  .archive-catalog-fields{grid-template-columns:1fr 16px 1fr 16px 1fr}.archive-catalog-fields button{grid-column:1/-1;margin-top:5px}.archive-dash{padding-bottom:8px}
+  .radio-sequence{grid-template-columns:1fr 1fr}.radio-sequence span{border-bottom:1px solid #a5aaa5}.radio-sequence span:nth-child(2){border-right:0}.radio-sequence span:nth-child(3),.radio-sequence span:nth-child(4){border-bottom:0}
+}
+.archive-site .archive-check form[data-map-check]{grid-template-columns:minmax(230px,1fr) auto}
+@media(max-width:760px){.archive-site .archive-check form[data-map-check]{grid-template-columns:1fr}}
