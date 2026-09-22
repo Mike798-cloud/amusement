@@ -166,3 +166,47 @@ button[data-photo]{display:block;width:100%;border:0;padding:0;background:transp
   .service-site .format-hint{margin:2px 0 4px}
   .service-site .svc-querybar button{margin:2px 1px}
 }
+
+
+/* v2.2 archive comparison pass — keep the drawing task readable without turning it into a hotspot hunt */
+.archive-site .map-task{margin:12px 0 15px;padding:11px 13px;border:1px solid #9b927d;background:#f4efde;line-height:1.75;color:#3b3831}
+.archive-site .map-task b{color:#71382f}
+.archive-site .map-stage{padding:18px!important}
+.archive-site .map-canvas{position:relative;line-height:0;background:#ece7d3}
+.archive-site .map-canvas img{display:block;width:100%;height:auto}
+.archive-site .map-markable{cursor:default}
+.archive-site .map-markable.is-marking{cursor:crosshair}
+.archive-site .map-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:stretch;margin:12px 0 20px}
+.archive-site .map-tools .archive-note{margin:0}
+.archive-site .map-zoom-button{min-width:116px;padding:8px 13px;border:1px solid #514b3f;background:#6f6857;color:#fff;font-family:'SimSun',serif;cursor:pointer}
+.archive-site .map-zoom-button:hover{background:#554f42}
+.archive-site .map-zoom-button:focus-visible{outline:2px solid #7d342b;outline-offset:2px}
+.archive-site .compare-wrap{padding:10px;background:#c8c1ad}
+.archive-site .compare-legend{display:flex;justify-content:space-between;gap:14px;padding:6px 2px 9px;font-size:13px;color:#4b463d}
+.archive-site .compare-stage{padding:18px!important;background:#5a5953!important}
+.archive-site .compare-canvas{position:relative;overflow:hidden;line-height:0;background:#ece7d3}
+.archive-site .compare-canvas>img,.archive-site .compare-top img{display:block;width:100%;height:auto;box-shadow:none}
+.archive-site .compare-top{position:absolute;left:0;top:0;bottom:0;width:50%;overflow:hidden;border-right:2px solid #8a332a;box-shadow:2px 0 0 rgba(244,239,217,.8)}
+.archive-site .compare-control{display:flex;align-items:center;gap:10px;margin:10px 2px 2px;line-height:1.5}
+.archive-site .compare-control input{flex:1;width:auto;min-width:120px;margin:0}
+.archive-site .archive-check p{line-height:1.75}
+.archive-site .archive-check form{grid-template-columns:minmax(230px,.8fr) minmax(260px,1.2fr) auto;align-items:end}
+.archive-site .archive-check .form-msg{grid-column:1/-1;margin:0}
+.archive-site .mark-readout{line-height:1.45}
+.archive-site .map-marker{z-index:6}
+@media(max-width:760px){
+  .archive-site .map-tools{grid-template-columns:1fr}
+  .archive-site .map-zoom-button{width:100%}
+  .archive-site .compare-legend{display:grid;gap:3px}
+  .archive-site .compare-stage{padding:8px!important}
+  .archive-site .map-stage{padding:8px!important}
+  .archive-site .archive-check form{grid-template-columns:1fr}
+  .archive-site .archive-check .form-msg{grid-column:auto}
+}
+
+.archive-site .map-switch{flex-wrap:wrap}
+.archive-site .map-switch button{flex:1 1 150px}
+@media(max-width:760px){
+  .archive-site .viewer{overflow:auto;align-items:flex-start;justify-content:flex-start;padding:14px}
+  .archive-site .viewer img{max-width:none;max-height:none;width:1100px;margin:45px auto 20px}
+}

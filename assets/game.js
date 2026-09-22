@@ -11,9 +11,48 @@
 
   const mapButtons=document.querySelectorAll('[data-map]');
   const mapSeen=new Set();
-  let currentMapYear='1999', mapMark=null, compareUsed=false;
-  if(mapButtons.length){const target=document.querySelector('#map-image');const marker=document.querySelector('.map-marker');const stage=document.querySelector('[data-map-mark]');const readout=document.querySelector('.mark-readout');const active=[...mapButtons].find(b=>b.classList.contains('active'));if(active?.dataset.year){mapSeen.add(active.dataset.year);currentMapYear=active.dataset.year;}const redraw=()=>{if(!marker)return;if(mapMark&&currentMapYear==='2003'){marker.hidden=false;marker.style.left=mapMark.x+'%';marker.style.top=mapMark.y+'%';}else marker.hidden=true;};mapButtons.forEach(b=>b.addEventListener('click',()=>{mapButtons.forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.year){mapSeen.add(b.dataset.year);currentMapYear=b.dataset.year;}if(target){target.src=b.dataset.map;target.alt=b.textContent+'平面图';}const note=document.querySelector('#map-note');if(note)note.textContent=b.dataset.note||'';redraw();}));if(stage){stage.addEventListener('click',e=>{if(e.target.closest('button'))return;if(currentMapYear!=='2003'){if(readout)readout.textContent='圈选只记录在2003竣工图上；请切到2003图后再点。';return;}const r=stage.getBoundingClientRect();const x=((e.clientX-r.left)/r.width)*100,y=((e.clientY-r.top)/r.height)*100;mapMark={x:+x.toFixed(2),y:+y.toFixed(2)};const form=document.querySelector('form[data-map-check]');if(form){form.elements.markx.value=mapMark.x;form.elements.marky.value=mapMark.y;}if(readout)readout.textContent='已圈选2003竣工图上的一个位置；可再次点击修改。';redraw();});}}
-  const cr=document.querySelector('#compare-range'), ct=document.querySelector('#compare-top');if(cr&&ct){const stage=ct.parentElement, img=ct.querySelector('img');const sync=()=>{ct.style.width=cr.value+'%';if(stage&&img)img.style.width=stage.clientWidth+'px';};cr.addEventListener('input',()=>{compareUsed=true;sync();});addEventListener('resize',sync);sync();}
+  let currentMapYear='1999', mapMark=null, compareUsed=false, mapAttempts=0;
+  if(mapButtons.length){
+    const target=document.querySelector('#map-image'), marker=document.querySelector('.map-marker'), stage=document.querySelector('[data-map-mark]'), readout=document.querySelector('.mark-readout');
+    const active=[...mapButtons].find(b=>b.classList.contains('active'));
+    if(active?.dataset.year){mapSeen.add(active.dataset.year);currentMapYear=active.dataset.year;}
+    const redraw=()=>{
+      if(stage)stage.classList.toggle('is-marking',currentMapYear==='2003');
+      if(!marker)return;
+      if(mapMark&&currentMapYear==='2003'){marker.hidden=false;marker.style.left=mapMark.x+'%';marker.style.top=mapMark.y+'%';}
+      else marker.hidden=true;
+    };
+    mapButtons.forEach(b=>b.addEventListener('click',()=>{
+      mapButtons.forEach(x=>x.classList.remove('active'));b.classList.add('active');
+      if(b.dataset.year){mapSeen.add(b.dataset.year);currentMapYear=b.dataset.year;}
+      if(target){target.src=b.dataset.map;target.alt=b.textContent+'平面图';}
+      const note=document.querySelector('#map-note');if(note)note.textContent=b.dataset.note||'';
+      redraw();
+    }));
+    if(stage){stage.addEventListener('click',e=>{
+      if(currentMapYear!=='2003'){if(readout)readout.textContent='标记只记在2003竣工图上。先比较版本，找到差异后再切回2003点击。';return;}
+      const r=stage.getBoundingClientRect();
+      const x=((e.clientX-r.left)/r.width)*100,y=((e.clientY-r.top)/r.height)*100;
+      mapMark={x:+x.toFixed(2),y:+y.toFixed(2)};
+      const form=document.querySelector('form[data-map-check]');
+      if(form){form.elements.markx.value=mapMark.x;form.elements.marky.value=mapMark.y;}
+      if(readout)readout.textContent='已在2003竣工图标记一个位置；再次点击可以修改。';
+      redraw();
+    });}
+    redraw();
+  }
+  document.querySelectorAll('[data-map-zoom]').forEach(btn=>btn.addEventListener('click',()=>{
+    const target=document.querySelector('#map-image'),viewer=document.querySelector('.viewer');
+    if(!target||!viewer)return;
+    const img=viewer.querySelector('img');if(img){img.src=target.src;img.alt=target.alt||'图纸放大查看';}
+    viewer.classList.add('open');
+  }));
+  const cr=document.querySelector('#compare-range'), ct=document.querySelector('#compare-top');
+  if(cr&&ct){
+    const stage=ct.parentElement, img=ct.querySelector('img');
+    const sync=()=>{ct.style.width=cr.value+'%';if(stage&&img)img.style.width=stage.clientWidth+'px';};
+    cr.addEventListener('input',()=>{compareUsed=true;sync();});addEventListener('resize',sync);sync();
+  }
 
   document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.filter;document.querySelectorAll('[data-record]').forEach(r=>{r.style.display=(f==='all'||r.dataset.record===f)?'table-row':'none';});}));
 
@@ -24,52 +63,57 @@
     if(localStorage.getItem('chundeng-map-ok')==='1')show();
     mapCheck.addEventListener('submit',e=>{
       e.preventDefault();
-      const x=parseFloat(mapCheck.elements.markx?.value||''), y=parseFloat(mapCheck.elements.marky?.value||''), raw=(mapCheck.elements.difference?.value||'').trim();
-      const compact=raw.replace(/[，,、。；;\s]/g,'');
+      const x=parseFloat(mapCheck.elements.markx?.value||''), y=parseFloat(mapCheck.elements.marky?.value||'');
       if(msg){msg.className='form-msg';msg.textContent='';}
-      if(mapSeen.size<3){if(msg){msg.textContent='三期图还没有看全。请把1999、2003、2006至少各打开一次。';msg.classList.add('error');}return;}
-      if(!compareUsed){if(msg){msg.textContent='请先拖动一次叠图，把2003与2006在同一位置对齐比较。';msg.classList.add('error');}return;}
-      if(!Number.isFinite(x)||!Number.isFinite(y)||!raw){if(msg){msg.textContent='还缺圈选位置或文字说明。';msg.classList.add('error');}return;}
+      if(!mapSeen.has('2003')||!mapSeen.has('2006')){if(msg){msg.textContent='还没完成版本对照。至少把2003竣工图和2006消防图各打开一次。';msg.classList.add('error');}return;}
+      if(!compareUsed){if(msg){msg.textContent='先拖动一次下面的分界线。两张图已经对齐，只要看同一位置有没有东西消失。';msg.classList.add('error');}return;}
+      if(!Number.isFinite(x)||!Number.isFinite(y)){if(msg){msg.textContent='还没有标位置。切回2003竣工图，在你认为后来消失的那一小块结构上点一下。';msg.classList.add('error');}return;}
       const rightSpot=x>=41.5&&x<=55.5&&y>=27.5&&y<=45.5;
-      const hasAccess=/(检修口|检修门|检查口|检修洞|检修开口)/.test(compact);
-      const hasWall=/(短墙|局部墙|墙体|隔墙|墙线)/.test(compact);
-      if(rightSpot&&hasAccess&&hasWall){
+      if(rightSpot){
         localStorage.setItem('chundeng-map-ok','1');show();
-        if(msg){msg.textContent='复核登记完成。项目调阅记录已开放。';msg.classList.add('ok');}
-      }else if(msg){msg.textContent='复核没有通过。请回到同一轴网位置，再比较2003与2006的墙线、开口和闭合关系。';msg.classList.add('error');}
+        if(msg){msg.textContent=mapSeen.has('1999')?'位置核对通过。1999原始图也能确认：这处局部结构是后来的改造内容，到了2006备案图又没有被画出。项目调阅记录已开放。':'位置核对通过。项目调阅记录已开放；如果回看1999原始图，还能确认这处结构并非原建筑自带。';msg.classList.add('ok');}
+      }else if(msg){
+        mapAttempts+=1;
+        msg.textContent=mapAttempts>=2?'再看“后场疏散通道”上方：2003图有一块带斜线、标着 V-02 的小区域，2006图没有。请在2003图点那一块。':'位置还没对上。排水管和尺寸数字都不用管，只看“后场疏散通道”上方那一带。';
+        msg.classList.add('error');
+      }
     });
   }
 
   const norm=s=>(s||'').trim().toUpperCase();
-  document.querySelectorAll('form[data-puzzle]').forEach(form=>form.addEventListener('submit',e=>{
-    e.preventDefault();const kind=form.dataset.puzzle,msg=form.querySelector('.form-msg');if(msg){msg.className='form-msg';msg.textContent='';}
-    const bad=t=>{if(msg){msg.textContent=t;msg.classList.add('error');}};
-    const ok=t=>{if(msg){msg.textContent=t;msg.classList.add('ok');}};
-    if(kind==='lab'){
-      const code=norm(form.elements.code?.value);
-      if(!/^SG-\d{6}-\d{3}$/.test(code))return bad('批次号格式不对。请按 SG-YYMMDD-### 输入完整编号。');
-      if(code!=='SG-060819-087')return bad('没有找到可公开查看的样片。请核对批次号。');
-      localStorage.setItem(auth.lab,'1');ok('已找到公开活动批次，正在打开样片……');setTimeout(()=>location.href=form.dataset.success,250);return;
-    }
-    if(kind==='service'){
-      const user=norm(form.elements.user?.value), pass=(form.elements.pass?.value||'').trim();
-      if(!/^[A-Z]{2}\d{3}$/.test(user))return bad('用户名格式不对。');
-      if(!/^\d{6}$/.test(pass))return bad('口令必须是6位数字。');
-      if(user!=='KF017'||pass!=='200407')return bad('用户名或口令错误。归档镜像不会锁定账号。');
-      localStorage.setItem(auth.service,'1');ok('验证通过，正在进入只读系统……');setTimeout(()=>location.href=form.dataset.success,250);return;
-    }
-    if(kind==='maintenance'){
-      const w=norm(form.elements.workorder?.value),box=form.querySelector('.terminal-result');
-      if(!/^WX-\d{6}$/.test(w))return bad('WORK ORDER 格式错误。');
-      if(box){box.hidden=false;if(w==='WX-060724'){box.innerHTML='MATCH: C-MIRROR / REPAIR / 060724<br><a href="../maintenance/repairs.html">OPEN RECORD</a>';ok('1 match.');}else if(['WX-060721','WX-060818','WX-060814'].includes(w)){const map={'WX-060721':'A-RIDE / utility','WX-060818':'A-RIDE / train','WX-060814':'D-WATER + C-MIRROR cross-ref'};box.textContent='MATCH: '+map[w];ok('1 match.');}else{box.textContent='NO MATCH IN RECOVERED INDEX';bad('未在恢复索引中找到该编号。');}}return;
-    }
-    if(kind==='archive'){
-      const a=norm(form.elements.archive?.value),box=form.querySelector('.archive-results');
-      if(!/^CH-\d{2}-\d{3}-[A-Z]$/.test(a))return bad('档号格式不对。请按 CH-YY-###-X 输入。');
-      if(a!=='CH-03-441-C')return bad('检索到的公开卷宗与当前条件不匹配，或该档号不存在。');
-      localStorage.setItem(auth.archive,'1');if(box){box.hidden=false;box.innerHTML='<b>检索结果 1 条</b><br>CH-03-441-C　春灯游乐园C区排水与后场检修改造　2003　长期保存<br><a href="../archive/records.html">打开工程目录</a>　·　<a href="../archive/maps.html">图纸阅览</a>'; }ok('检索完成。');return;
-    }
-  }));
+  const normCode=s=>norm(s).replace(/[‐‑‒–—－﹣]/g,'-').replace(/\s+/g,'');
+  document.querySelectorAll('form[data-puzzle]').forEach(form=>{
+    let attempts=0;
+    form.addEventListener('submit',e=>{
+      e.preventDefault();const kind=form.dataset.puzzle,msg=form.querySelector('.form-msg');if(msg){msg.className='form-msg';msg.textContent='';}
+      const bad=t=>{attempts+=1;if(msg){msg.textContent=t;msg.classList.add('error');}};
+      const ok=t=>{if(msg){msg.textContent=t;msg.classList.add('ok');}};
+      if(kind==='lab'){
+        const code=normCode(form.elements.code?.value);
+        if(!/^SG-\d{6}-\d{3}$/.test(code))return bad('批次号应为 SG-日期6位-流水3位。完整号码就在春灯相册的“冲印批次”表里。');
+        if(code!=='SG-060819-087')return bad(attempts>=1?'这个批次没有公开样片。若在追查8月19日，回看春灯相册里标着“8月19日夜场前后”的那一行。':'没有找到可公开查看的样片。请核对批次号。');
+        localStorage.setItem(auth.lab,'1');ok('已找到公开活动批次，正在打开样片……');setTimeout(()=>location.href=form.dataset.success,250);return;
+      }
+      if(kind==='service'){
+        const user=normCode(form.elements.user?.value), pass=(form.elements.pass?.value||'').replace(/\s+/g,'');
+        if(!/^[A-Z]{2}\d{3}$/.test(user))return bad('用户名是2位岗位代码加3位工号。旧论坛帖子里有一处直接写出了员工签名和编号。');
+        if(!/^\d{6}$/.test(pass))return bad('口令是6位数字。登录页写的是“首次口令为入职年月”，不是生日。');
+        if(user!=='KF017'||pass!=='200407')return bad(attempts>=1?'账号或口令仍不匹配。论坛“旧事旧人”里相邻两层分别给了陆婕的入职月份和 KF 编号，把两条信息合起来。':'用户名或口令错误。归档镜像不会锁定账号。');
+        localStorage.setItem(auth.service,'1');ok('验证通过，正在进入只读系统……');setTimeout(()=>location.href=form.dataset.success,250);return;
+      }
+      if(kind==='maintenance'){
+        const w=normCode(form.elements.workorder?.value),box=form.querySelector('.terminal-result');
+        if(!/^WX-\d{6}$/.test(w))return bad('维修单编号应为 WX-######。先从游客服务系统点开与“魔镜宫后场侧门”有关的工程转办，再带完整编号来查。');
+        if(box){box.hidden=false;if(w==='WX-060724'){box.innerHTML='MATCH: C-MIRROR / REPAIR / 060724<br><a href="../maintenance/repairs.html">OPEN RECORD</a>';ok('1 match.');}else if(['WX-060721','WX-060818','WX-060814'].includes(w)){const map={'WX-060721':'A-RIDE / utility','WX-060818':'A-RIDE / train','WX-060814':'D-WATER + C-MIRROR cross-ref'};box.textContent='MATCH: '+map[w];ok('1 match.');}else{box.textContent='NO MATCH IN RECOVERED INDEX';bad(attempts>=1?'恢复索引里没有这张单。当前调查需要的是游客服务系统里“魔镜宫后场侧门”的那张 WX 转办。':'未在恢复索引中找到该编号。');}}return;
+      }
+      if(kind==='archive'){
+        const a=normCode(form.elements.archive?.value),box=form.querySelector('.archive-results');
+        if(!/^CH-\d{2}-\d{3}-[A-Z]$/.test(a))return bad('完整档号格式是 CH-YY-###-X。工程组附件只抄了中间那串索引，需要按这里的格式补全。');
+        if(a!=='CH-03-441-C')return bad(attempts>=1?'这个档号不是当前工程卷。回看工程组 C-MIRROR / REPAIR 页纸质附件背面的手写索引。':'检索到的公开卷宗与当前条件不匹配，或该档号不存在。');
+        localStorage.setItem(auth.archive,'1');if(box){box.hidden=false;box.innerHTML='<b>检索结果 1 条</b><br>CH-03-441-C　春灯游乐园C区排水与后场检修改造　2003　长期保存<br><a href="../archive/records.html">打开工程目录</a>　·　<a href="../archive/maps.html">图纸阅览</a>'; }ok('检索完成。');return;
+      }
+    });
+  });
 
 
   /* voluntary 1 yuan support layer, adapted from the current Xu Yuan flow.
